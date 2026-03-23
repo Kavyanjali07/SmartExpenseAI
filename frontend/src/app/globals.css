@@ -1,0 +1,35 @@
+@import "tailwindcss";
+
+:root {
+  --background: #0a0e27;
+  --foreground: #ffffff;
+  --primary: #7d5aff;
+  --secondary: #00d4ff;
+  --accent: #ff006e;
+  --card-bg: rgba(27, 31, 59, 0.7);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-primary: var(--primary);
+  --color-secondary: var(--secondary);
+  --color-accent: var(--accent);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: linear-gradient(135deg, #0a0e27 0%, #1a0f35 50%, #0f1a2e 100%);
+    --foreground: #ededed;
+  }
+}
+
+html, body {
+  background: linear-gradient(135deg, #0a0e27 0%, #1a0f35 50%, #0f1a2e 100%);
+  color: var(--foreground);
+  font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  margin: 0;
+  padding: 0;
+}
