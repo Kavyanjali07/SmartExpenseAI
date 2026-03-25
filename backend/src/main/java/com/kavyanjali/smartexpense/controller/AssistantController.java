@@ -9,15 +9,21 @@ import org.springframework.web.bind.annotation.RestController;
 import com.kavyanjali.smartexpense.dto.AssistantRequestDto;
 import com.kavyanjali.smartexpense.dto.AssistantResponseDto;
 import com.kavyanjali.smartexpense.service.AssistantService;
+import com.kavyanjali.smartexpense.service.DevUserService;
 
 @RestController
 @RequestMapping("/assistant")
 public class AssistantController {
 
     private final AssistantService assistantService;
+    private final DevUserService devUserService;
 
-    public AssistantController(AssistantService assistantService) {
+    public AssistantController(
+            AssistantService assistantService,
+            DevUserService devUserService) {
+
         this.assistantService = assistantService;
+        this.devUserService = devUserService;
     }
 
     @PostMapping("/ask")
@@ -25,7 +31,9 @@ public class AssistantController {
             Authentication authentication,
             @RequestBody AssistantRequestDto request) {
 
-        String username = authentication.getName();
+        String username = (authentication != null)
+                ? authentication.getName()
+                : devUserService.getDevUser().getUsername();
 
         String answer =
                 assistantService.answerQuestion(username, request.getQuestion());
@@ -38,7 +46,9 @@ public class AssistantController {
             Authentication authentication,
             @RequestBody AssistantRequestDto request) {
 
-        String username = authentication.getName();
+        String username = (authentication != null)
+                ? authentication.getName()
+                : devUserService.getDevUser().getUsername();
 
         String response =
                 assistantService.processAIQuery(username, request.getQuestion());

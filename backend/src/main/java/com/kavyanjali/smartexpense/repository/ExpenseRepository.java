@@ -44,13 +44,13 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
      * Fetch all expenses for a user in a specific month
      * Used for insight engine (spike detection, AI analysis)
      */
-    @Query("""
-        SELECT e
-        FROM Expense e
-        WHERE e.user.username = :username
-        AND YEAR(e.expenseDate) = :year
-        AND MONTH(e.expenseDate) = :month
-    """)
+    @Query(value = """
+        SELECT e.* FROM expenses e
+        JOIN users u ON e.user_id = u.id
+        WHERE u.username = :username
+        AND YEAR(e.expense_date) = :year
+        AND MONTH(e.expense_date) = :month
+    """, nativeQuery = true)
     List<Expense> findExpensesForMonth(
             @Param("username") String username,
             @Param("year") int year,
@@ -72,13 +72,13 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
      * Sum of expenses for a user in a month
      * Used by analytics engine
      */
-    @Query("""
+    @Query(value = """
         SELECT COALESCE(SUM(e.amount), 0)
-        FROM Expense e
-        WHERE e.user.id = :userId
-        AND YEAR(e.expenseDate) = :year
-        AND MONTH(e.expenseDate) = :month
-    """)
+        FROM expenses e
+        WHERE e.user_id = :userId
+        AND YEAR(e.expense_date) = :year
+        AND MONTH(e.expense_date) = :month
+    """, nativeQuery = true)
     BigDecimal sumAmountByUserIdAndYearAndMonth(
             @Param("userId") Long userId,
             @Param("year") int year,

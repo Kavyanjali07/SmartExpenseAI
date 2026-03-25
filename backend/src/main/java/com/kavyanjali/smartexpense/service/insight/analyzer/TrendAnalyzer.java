@@ -53,14 +53,18 @@ public class TrendAnalyzer {
 
             if (latest.getTotalAmount() != null && previous.getTotalAmount() != null) {
                 BigDecimal difference = latest.getTotalAmount().subtract(previous.getTotalAmount());
-                String trend = difference.compareTo(BigDecimal.ZERO) > 0
-                        ? "increased"
-                        : "decreased";
+                String trend;
+                if (difference.compareTo(BigDecimal.ZERO) > 0) {
+                    trend = "increased by ₹" + difference.abs();
+                } else if (difference.compareTo(BigDecimal.ZERO) < 0) {
+                    trend = "decreased by ₹" + difference.abs();
+                } else {
+                    trend = "remained the same";
+                }
 
                 insights.add(new InsightDto(
                         "spending_trend",
-                        "Your spending " + trend + " by " +
-                                difference.abs() + " compared to last month"
+                        "Your spending " + trend + " compared to last month"
                 ));
             }
         } catch (Exception e) {

@@ -51,7 +51,7 @@ public class SpendingAnalyzer {
             if (currentMonth.getTotalAmount() != null) {
                 insights.add(new InsightDto(
                         "spending_summary",
-                        "You've spent " + currentMonth.getTotalAmount()
+                        "You've spent ₹" + currentMonth.getTotalAmount()
                                 + " this month with " + currentMonth.getExpenseCount() + " expenses"
                 ));
             }
@@ -72,7 +72,7 @@ public class SpendingAnalyzer {
             insights.add(new InsightDto(
                     "top_category",
                     "Your top spending category is \"" + topCategory.getCategory()
-                            + "\" with " + topCategory.getTotalAmount()
+                            + "\" with ₹" + topCategory.getTotalAmount()
             ));
         } catch (Exception e) {
             logger.debug("Could not fetch category breakdown: {}", e.getMessage());

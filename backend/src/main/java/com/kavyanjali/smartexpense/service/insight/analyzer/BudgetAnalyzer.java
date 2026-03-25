@@ -35,8 +35,8 @@ public class BudgetAnalyzer {
             if (budget != null && budget.getRemaining() != null) {
                 BigDecimal remaining = budget.getRemaining();
                 String budgetStatus = remaining.compareTo(BigDecimal.ZERO) > 0
-                        ? "You have " + remaining + " remaining in your budget"
-                        : "You have exceeded your budget by " + remaining.abs();
+                        ? "You have ₹" + remaining + " remaining in your budget"
+                        : "You have exceeded your budget by ₹" + remaining.abs();
 
                 insights.add(new InsightDto(
                         "budget_status",
