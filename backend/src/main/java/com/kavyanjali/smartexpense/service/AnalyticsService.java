@@ -3,6 +3,7 @@ package com.kavyanjali.smartexpense.service;
 import com.kavyanjali.smartexpense.dto.CategoryBreakdownDto;
 import com.kavyanjali.smartexpense.dto.CurrentMonthTotalDto;
 import com.kavyanjali.smartexpense.dto.MonthlySummaryDto;
+import com.kavyanjali.smartexpense.dto.MonthlyTrendDto;
 import com.kavyanjali.smartexpense.model.Expense;
 import com.kavyanjali.smartexpense.model.User;
 import com.kavyanjali.smartexpense.repository.ExpenseRepository;
@@ -68,6 +69,20 @@ public class AnalyticsService {
         }
 
         return new ArrayList<>(summaryMap.values());
+    }
+
+    /**
+     * Lightweight month-over-month totals for trend and prediction use-cases.
+     */
+    @Transactional(readOnly = true)
+    public List<MonthlyTrendDto> getMonthlyTrend(String username) {
+
+        return getMonthlySummary(username).stream()
+                .map(summary -> new MonthlyTrendDto(
+                        summary.getMonth(),
+                        summary.getTotalAmount()
+                ))
+                .toList();
     }
 
     /**

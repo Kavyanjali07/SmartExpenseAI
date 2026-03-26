@@ -39,7 +39,7 @@ public class SecurityConfig {
                 .requestMatchers("/analytics/**").permitAll()
                 .requestMatchers("/insights/**").permitAll()
                 .requestMatchers("/expenses/**").permitAll()
-                .requestMatchers("/assistant/**").permitAll()
+                .requestMatchers("/assistant/**").authenticated()
                 .anyRequest().authenticated()
             )
 

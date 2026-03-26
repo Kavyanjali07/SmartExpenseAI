@@ -1,7 +1,9 @@
 package com.kavyanjali.smartexpense.service.insight;
 
 import com.kavyanjali.smartexpense.dto.InsightDto;
+import com.kavyanjali.smartexpense.service.insight.analyzer.BehaviorAnalyzer;
 import com.kavyanjali.smartexpense.service.insight.analyzer.BudgetAnalyzer;
+import com.kavyanjali.smartexpense.service.insight.analyzer.PredictionAnalyzer;
 import com.kavyanjali.smartexpense.service.insight.analyzer.RecurringAnalyzer;
 import com.kavyanjali.smartexpense.service.insight.analyzer.SpendingAnalyzer;
 import com.kavyanjali.smartexpense.service.insight.analyzer.TrendAnalyzer;
@@ -26,17 +28,23 @@ public class InsightOrchestratorService {
     private final BudgetAnalyzer budgetAnalyzer;
     private final TrendAnalyzer trendAnalyzer;
     private final RecurringAnalyzer recurringAnalyzer;
+    private final PredictionAnalyzer predictionAnalyzer;
+    private final BehaviorAnalyzer behaviorAnalyzer;
 
     public InsightOrchestratorService(
             SpendingAnalyzer spendingAnalyzer,
             BudgetAnalyzer budgetAnalyzer,
             TrendAnalyzer trendAnalyzer,
-            RecurringAnalyzer recurringAnalyzer) {
+            RecurringAnalyzer recurringAnalyzer,
+            PredictionAnalyzer predictionAnalyzer,
+            BehaviorAnalyzer behaviorAnalyzer) {
 
         this.spendingAnalyzer = spendingAnalyzer;
         this.budgetAnalyzer = budgetAnalyzer;
         this.trendAnalyzer = trendAnalyzer;
         this.recurringAnalyzer = recurringAnalyzer;
+        this.predictionAnalyzer = predictionAnalyzer;
+        this.behaviorAnalyzer = behaviorAnalyzer;
     }
 
     /**
@@ -54,6 +62,8 @@ public class InsightOrchestratorService {
             insights.addAll(budgetAnalyzer.analyze(username));
             insights.addAll(trendAnalyzer.analyze(username));
             insights.addAll(recurringAnalyzer.analyze(username));
+            insights.addAll(predictionAnalyzer.analyze(username));
+            insights.addAll(behaviorAnalyzer.analyze(username));
 
             logger.info("Generated {} total insights for user: {}", insights.size(), username);
         } catch (Exception e) {
