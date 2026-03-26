@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -14,6 +15,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -52,21 +54,13 @@ public class InsightController {
         Authentication auth =
                 SecurityContextHolder.getContext().getAuthentication();
 
-        // If no authentication or not authenticated, use dev fallback
-        if (auth == null || !auth.isAuthenticated()) {
-            logger.warn("No authenticated user found, using dev fallback");
-            return "testuser";
+        if (auth == null
+                || auth.getName() == null
+                || auth.getName().isBlank()
+                || "anonymousUser".equals(auth.getName())) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized");
         }
 
-        String username = auth.getName();
-        
-        // Handle anonymous user
-        if (username == null || username.isEmpty() || username.equals("anonymousUser")) {
-            logger.warn("Anonymous user detected, using dev fallback");
-            return "testuser";
-        }
-
-        logger.debug("Resolved username: {}", username);
-        return username;
+        return auth.getName();
     }
 }

@@ -3,24 +3,27 @@
 import { useEffect, useState } from "react";
 import DashboardLayout from "@/components/DashboardLayout";
 import AddExpenseForm from "@/components/expenses/AddExpenseForm";
-import { getExpenses, deleteExpense } from "@/services/api";
+import { deleteExpense, getApiErrorMessage, getExpenses, type Expense } from "@/services/api";
 import CsvImport from "@/components/expenses/CsvImport";
 
 export default function ExpensesPage() {
 
-  const [expenses, setExpenses] = useState<any[]>([]);
+  const [expenses, setExpenses] = useState<Expense[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     loadExpenses();
   }, []);
 
   const loadExpenses = async () => {
+    setLoading(true);
+    setError("");
     try {
       const data = await getExpenses();
       setExpenses(data);
     } catch (err) {
-      console.error("Failed to load expenses", err);
+      setError(getApiErrorMessage(err, "Could not load expenses."));
     } finally {
       setLoading(false);
     }
@@ -31,7 +34,7 @@ export default function ExpensesPage() {
       await deleteExpense(id);
       loadExpenses();
     } catch (err) {
-      console.error("Failed to delete expense", err);
+      setError(getApiErrorMessage(err, "Could not delete expense."));
     }
   };
 
@@ -46,6 +49,18 @@ export default function ExpensesPage() {
 
         <AddExpenseForm onCreated={loadExpenses} />
         <CsvImport onImported={loadExpenses} />
+
+        {error && (
+          <div className="glass-card p-5 border border-red-500/30 bg-red-500/10">
+            <p className="text-red-200">{error}</p>
+            <button
+              onClick={loadExpenses}
+              className="mt-3 px-4 py-2 rounded-lg border border-red-400/30 text-red-100 hover:bg-red-500/20"
+            >
+              Retry
+            </button>
+          </div>
+        )}
 
         {/* Loading State */}
         {loading && (
@@ -79,7 +94,7 @@ export default function ExpensesPage() {
               </thead>
 
               <tbody>
-                {expenses.map((e: any, index: number) => (
+                {expenses.map((e, index) => (
                   <tr
                     key={e.id}
                     className="border-b border-cyan-400/10 hover:bg-cyan-400/5 transition-all duration-300 group animate-in"

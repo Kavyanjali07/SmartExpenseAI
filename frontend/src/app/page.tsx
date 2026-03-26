@@ -7,159 +7,160 @@ import CategoryPieChart from "@/components/charts/CategoryPieChart";
 import MonthlyTrendChart from "@/components/charts/MonthlyTrendChart";
 import AIInsights from "@/components/insights/AIInsights";
 import AnomaliesTimeline from "@/components/timeline/AnomaliesTimeline";
-import AnimatedStatCard from "@/components/stats/AnimatedStatCard";
 import {
+  getApiErrorMessage,
   getDashboardSummary,
-  getFinancialHealth,
   getMonthlyTrend,
   getCategoryDistribution,
   getInsights,
-  getExpenses,
+  type DashboardSummaryResponse,
+  type Insight,
 } from "@/services/api";
-import { Sparkles } from "lucide-react";
 
 export default function Home() {
-  const [summary, setSummary] = useState<any>(null);
-  const [health, setHealth] = useState<any>(null);
-  const [trend, setTrend] = useState([]);
-  const [categories, setCategories] = useState([]);
-  const [insights, setInsights] = useState([]);
-  const [expenses, setExpenses] = useState([]);
+  const [summary, setSummary] = useState<DashboardSummaryResponse | null>(null);
+  const [monthlyTrend, setMonthlyTrend] = useState<any[]>([]);
+  const [categoryData, setCategoryData] = useState<any[]>([]);
+  const [insights, setInsights] = useState<Insight[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
-  useEffect(() => {
-    loadData();
-  }, []);
-
-  const loadData = async () => {
+  const loadDashboardData = async () => {
+    setLoading(true);
+    setError("");
     try {
-      const [summaryData, healthData, trendData, categoryData, insightsData, expensesData] = await Promise.all([
+      const [sum, trend, dist, ins] = await Promise.all([
         getDashboardSummary(),
-        getFinancialHealth(),
         getMonthlyTrend(),
         getCategoryDistribution(),
         getInsights(),
-        getExpenses(),
       ]);
-
-      setSummary(summaryData);
-      setHealth(healthData);
-      setTrend(trendData);
-      setCategories(categoryData);
-      setInsights(insightsData);
-      setExpenses(expensesData);
+      setSummary(sum);
+      setMonthlyTrend(trend);
+      setCategoryData(dist);
+      setInsights(ins);
     } catch (err) {
-      console.error(err);
+      setError(getApiErrorMessage(err, "Could not load dashboard data."));
     } finally {
       setLoading(false);
     }
   };
 
-  // Format insights for AI Insights component
-  const aiInsightsData = insights.map((insight: any, idx: number) => {
-    const types: Array<"alert" | "insight" | "optimization"> = ["alert", "insight", "optimization"];
-    const severities: Array<"low" | "medium" | "high"> = ["high", "medium", "low"];
-    
+  useEffect(() => {
+    loadDashboardData();
+  }, []);
+
+  const insightCards = insights.map((item, index) => {
+    const type =
+      item.message.toLowerCase().includes("anomaly")
+        ? "alert"
+        : index % 2 === 0
+          ? "insight"
+          : "optimization";
     return {
-      id: `insight-${idx}`,
-      type: types[idx % 3],
-      title: insight.message?.split(".")[0] || "Financial Insight",
-      description: insight.message || "",
-      severity: severities[idx % 3],
+      id: String(index + 1),
+      type,
+      title: item.message.split(".")[0] || "Financial insight",
+      description: item.message,
     };
   });
 
-  // Format timeline events
-  const timelineEvents = expenses?.slice(0, 5).map((exp: any, idx: number) => {
-    const types: Array<"anomaly" | "transaction" | "milestone"> = ["anomaly", "transaction", "milestone"];
-    
-    return {
-      date: exp.expenseDate,
-      title: `High Dining Expense (Aug ${13 + idx})`,
-      description: `Detected a ${exp.category} expense of ₹${exp.amount}`,
-      type: types[idx % 2] as "anomaly" | "transaction" | "milestone",
-    };
-  }) || [];
+  const timelineEvents =
+    insights.length > 0
+      ? insights.slice(0, 6).map((item, index) => ({
+          date: `Point ${index + 1}`,
+          title: item.message.slice(0, 42),
+          description: item.message,
+          type: item.message.toLowerCase().includes("anomaly")
+            ? ("anomaly" as const)
+            : ("milestone" as const),
+        }))
+      : [
+          {
+            date: "Start",
+            title: "Add your first expenses to view trend events",
+            type: "milestone" as const,
+          },
+        ];
 
   return (
     <DashboardLayout>
-      <div className="space-y-8 pb-12">
-        {/* Header */}
-        <div className="flex items-center justify-between">
-          <div>
-            <div className="flex items-center gap-3">
-              <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-cyan-500 to-purple-600 flex items-center justify-center">
-                <Sparkles size={28} className="text-white" />
+      <div className="space-y-6">
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-center text-white tracking-wide">
+            Financial Dashboard
+          </h1>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="glass-card p-5 border border-white/10">
+            <p className="text-xs text-gray-400">This Month Spend</p>
+            <p className="text-2xl font-bold text-white mt-1">
+              ₹{summary?.totalSpent ?? 0}
+            </p>
+          </div>
+          <div className="glass-card p-5 border border-white/10">
+            <p className="text-xs text-gray-400">Budget Remaining</p>
+            <p className="text-2xl font-bold text-white mt-1">
+              ₹{summary?.budgetRemaining ?? 0}
+            </p>
+          </div>
+          <div className="glass-card p-5 border border-white/10">
+            <p className="text-xs text-gray-400">Top Category</p>
+            <p className="text-2xl font-bold text-white mt-1">
+              {summary?.topCategory || "Not available"}
+            </p>
+          </div>
+        </div>
+
+        {loading && (
+          <div className="glass-card p-8 text-center border border-white/10">
+            <p className="text-cyan-300">Loading dashboard...</p>
+          </div>
+        )}
+
+        {error && (
+          <div className="glass-card p-6 border border-red-500/30 bg-red-500/10">
+            <p className="text-red-200 font-medium">{error}</p>
+            <button
+              onClick={loadDashboardData}
+              className="mt-4 px-4 py-2 rounded-lg bg-red-500/20 border border-red-400/30 text-red-100 hover:bg-red-500/30 transition-colors"
+            >
+              Retry
+            </button>
+          </div>
+        )}
+
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          <div className="lg:col-span-5">
+            <div className="glass-card p-6 h-full border border-white/5">
+              <BubbleChart data={categoryData} />
+            </div>
+          </div>
+
+          <div className="lg:col-span-3">
+            <div className="glass-card p-6 h-full border border-white/5">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-bold text-white">AI Insights</h3>
               </div>
-              <h1 className="text-3xl font-bold text-white">SMART AI</h1>
-            </div>
-          </div>
-          <div className="text-right">
-            <p className="text-gray-400 text-sm">Personal Finance Assistant</p>
-            <p className="text-cyan-300 font-semibold">Active Monitoring</p>
-          </div>
-        </div>
-
-        {/* Main Content: Bubble Chart | AI Insights | Category Distribution */}
-        <div className="grid grid-cols-12 gap-6">
-          {/* Left: Bubble Chart */}
-          {categories.length > 0 && <BubbleChart data={categories} />}
-
-          {/* Middle: AI Insights Column */}
-          <div className="col-span-4 space-y-6">
-            <div className="glass-card p-6 rounded-3xl">
-              <h2 className="text-lg font-bold mb-4 gradient-text">AI Insights</h2>
-              <AIInsights insights={aiInsightsData.slice(0, 3)} />
+              <AIInsights insights={insightCards as any} />
             </div>
           </div>
 
-          {/* Right: Category Distribution */}
-          {categories.length > 0 && (
-            <div className="col-span-3">
-              <h2 className="text-lg font-bold mb-4 gradient-text block">Category Distribution</h2>
-              <CategoryPieChart data={categories} />
+          <div className="lg:col-span-4 flex flex-col gap-6">
+            <div className="glass-card p-6 flex-1 border border-white/5">
+              <CategoryPieChart data={categoryData} />
             </div>
-          )}
-        </div>
 
-        {/* Bottom Section: Stats and Timeline */}
-        <div className="grid grid-cols-12 gap-6">
-          {/* Stats Row */}
-          <div className="col-span-3 space-y-4">
-            <div>
-              <p className="text-gray-400 text-xs mb-2">Recurring Spending Identified</p>
-              <p className="text-3xl font-bold text-cyan-300">
-                ₹{summary?.totalSpent || 0}
-              </p>
-            </div>
-          </div>
-
-          {/* Category Overview Bar Chart */}
-          {trend.length > 0 && (
-            <div className="col-span-6">
-              <MonthlyTrendChart data={trend} />
-            </div>
-          )}
-
-          {/* Gems/Stats */}
-          <div className="col-span-3 space-y-3">
-            <div className="glass-card p-4 rounded-xl border border-cyan-400/20">
-              <p className="text-gray-400 text-xs">Budget Optimization</p>
-              <p className="text-2xl font-bold text-purple-300">
-                {health?.score || 85}%
-              </p>
-            </div>
-            <div className="glass-card p-4 rounded-xl border border-cyan-400/20">
-              <p className="text-gray-400 text-xs">Remaining Budget</p>
-              <p className="text-2xl font-bold text-green-300">
-                ₹{summary?.budgetRemaining || 0}
-              </p>
+            <div className="glass-card p-6 flex-1 border border-white/5">
+              <MonthlyTrendChart data={monthlyTrend} />
             </div>
           </div>
         </div>
 
-        {/* Timeline */}
-        {timelineEvents.length > 0 && <AnomaliesTimeline events={timelineEvents} />}
+        <div className="w-full">
+          <AnomaliesTimeline events={timelineEvents} />
+        </div>
       </div>
     </DashboardLayout>
   );

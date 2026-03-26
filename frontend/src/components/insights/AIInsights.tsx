@@ -1,6 +1,6 @@
 "use client";
 
-import { AlertCircle, TrendingUp, Zap } from "lucide-react";
+import { Target, Triangle, Wallet } from "lucide-react";
 
 interface InsightItem {
   id: string;
@@ -11,43 +11,74 @@ interface InsightItem {
 }
 
 export default function AIInsights({ insights }: { insights: InsightItem[] }) {
-  const getIcon = (type: string, severity?: string) => {
-    if (severity === "high") return "🔴";
-    if (severity === "medium") return "🟡";
-    if (severity === "low") return "🟢";
-    if (type === "alert") return "🚨";
-    if (type === "insight") return "💡";
-    return "⚡";
-  };
-
-  const getColor = (type: string, severity?: string) => {
-    if (severity === "high") return "border-red-500/40 bg-red-500/5";
-    if (severity === "medium") return "border-orange-500/40 bg-orange-500/5";
-    if (severity === "low") return "border-green-500/40 bg-green-500/5";
-    if (type === "alert") return "border-red-500/30 bg-red-500/5";
-    if (type === "insight") return "border-cyan-500/30 bg-cyan-500/5";
-    return "border-purple-500/30 bg-purple-500/5";
+  const getConfig = (type: string) => {
+    if (type === "insight") {
+      return {
+        icon: <Target size={18} />,
+        color: "#00d4ff",
+        bgColor: "rgba(0, 212, 255, 0.05)",
+        borderColor: "rgba(0, 212, 255, 0.1)",
+      };
+    }
+    if (type === "alert") {
+      return {
+        icon: <Triangle size={18} />,
+        color: "#ff006e",
+        bgColor: "rgba(255, 0, 110, 0.05)",
+        borderColor: "rgba(255, 0, 110, 0.1)",
+      };
+    }
+    return {
+      icon: <Wallet size={18} />,
+      color: "#7d5aff",
+      bgColor: "rgba(125, 90, 255, 0.05)",
+      borderColor: "rgba(125, 90, 255, 0.1)",
+    };
   };
 
   return (
-    <div className="space-y-3">
-      {insights.map((insight) => (
-        <div
-          key={insight.id}
-          className={`glass-card p-4 border rounded-2xl transition-all hover:scale-105 ${getColor(
-            insight.type,
-            insight.severity
-          )}`}
-        >
-          <div className="flex gap-3 items-start">
-            <div className="text-2xl mt-1">{getIcon(insight.type, insight.severity)}</div>
-            <div className="flex-1">
-              <p className="font-semibold text-white text-sm">{insight.title}</p>
-              <p className="text-gray-300 text-xs mt-1">{insight.description}</p>
-            </div>
-          </div>
+    <div className="flex flex-col gap-4">
+      {insights.length === 0 && (
+        <div className="p-4 rounded-xl border border-white/10 bg-white/5">
+          <p className="text-sm text-gray-300">
+            No insights yet. Add a few expenses to generate personalized suggestions.
+          </p>
         </div>
-      ))}
+      )}
+      {insights.map((insight, idx) => {
+        const config = getConfig(insight.type);
+        return (
+          <div
+            key={insight.id}
+            className="flex flex-col gap-3 p-5 rounded-2xl border transition-all hover:bg-white/5"
+            style={{
+              background: config.bgColor,
+              borderColor: config.borderColor,
+              animationDelay: `${idx * 0.1}s`,
+            }}
+          >
+            <div className="flex items-center gap-3">
+              <div 
+                className="w-10 h-10 rounded-xl flex items-center justify-center border"
+                style={{ 
+                  color: config.color, 
+                  borderColor: config.borderColor,
+                  background: "rgba(255,255,255,0.02)"
+                }}
+              >
+                {config.icon}
+              </div>
+              <h4 className="font-bold text-white text-sm flex-1 leading-tight">
+                {insight.title}
+              </h4>
+            </div>
+            
+            <p className="text-gray-400 text-xs leading-relaxed pl-1">
+              {insight.description}
+            </p>
+          </div>
+        );
+      })}
     </div>
   );
 }

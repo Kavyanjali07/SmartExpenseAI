@@ -1,19 +1,23 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
-export default function ExpenseCarousel({ data }: any) {
+type ExpenseCarouselItem = {
+  category: string;
+  amount: number;
+  description?: string;
+  expenseDate?: string;
+};
+
+export default function ExpenseCarousel({ data }: { data?: ExpenseCarouselItem[] }) {
   const [current, setCurrent] = useState(0);
-  const [direction, setDirection] = useState<"left" | "right">("right");
 
   const next = () => {
-    setDirection("right");
     setCurrent((prev) => (prev + 1) % (data?.length || 1));
   };
 
   const prev = () => {
-    setDirection("left");
     setCurrent((prev) => (prev - 1 + (data?.length || 1)) % (data?.length || 1));
   };
 
@@ -65,7 +69,7 @@ export default function ExpenseCarousel({ data }: any) {
             </div>
 
             <p className="text-sm text-gray-300 italic">
-              "{currentExpense?.description}"
+              &quot;{currentExpense?.description}&quot;
             </p>
 
             <p className="text-xs text-gray-500">
@@ -85,7 +89,7 @@ export default function ExpenseCarousel({ data }: any) {
 
       {/* Carousel Indicators */}
       <div className="flex justify-center gap-2 mt-8">
-        {data.map((_: any, index: number) => (
+        {data.map((_, index) => (
           <button
             key={index}
             onClick={() => setCurrent(index)}

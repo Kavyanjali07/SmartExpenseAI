@@ -36,6 +36,15 @@ public class AuthController {
      */
     @PostMapping("/register")
     public ResponseEntity<UserResponse> register(@Valid @RequestBody UserRegistrationRequest request) {
+        return registerUser(request);
+    }
+
+    @PostMapping("/signup")
+    public ResponseEntity<UserResponse> signup(@Valid @RequestBody UserRegistrationRequest request) {
+        return registerUser(request);
+    }
+
+    private ResponseEntity<UserResponse> registerUser(UserRegistrationRequest request) {
         logger.info("Registration attempt for username: {}", request.getUsername());
 
         // Convert DTO to Entity
@@ -55,6 +64,9 @@ public class AuthController {
                 savedUser.getEmail(),
                 savedUser.getFullName(),
                 savedUser.getRiskProfile(),
+                savedUser.getMonthlyIncome(),
+                savedUser.getMonthlyBudget(),
+                savedUser.getPrimaryGoal(),
                 savedUser.getCreatedAt()
         );
 

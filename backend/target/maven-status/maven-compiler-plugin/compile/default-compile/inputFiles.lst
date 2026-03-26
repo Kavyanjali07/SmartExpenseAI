@@ -20,6 +20,7 @@
 /home/kavya/Documents/FinanceProject/SmartExpenseAI/backend/src/main/java/com/kavyanjali/smartexpense/dto/MonthlyTrendDto.java
 /home/kavya/Documents/FinanceProject/SmartExpenseAI/backend/src/main/java/com/kavyanjali/smartexpense/service/BudgetService.java
 /home/kavya/Documents/FinanceProject/SmartExpenseAI/backend/src/main/java/com/kavyanjali/smartexpense/service/insight/analyzer/TrendAnalyzer.java
+/home/kavya/Documents/FinanceProject/SmartExpenseAI/backend/src/main/java/com/kavyanjali/smartexpense/dto/ProfileUpdateRequest.java
 /home/kavya/Documents/FinanceProject/SmartExpenseAI/backend/src/main/java/com/kavyanjali/smartexpense/controller/AnalyticsController.java
 /home/kavya/Documents/FinanceProject/SmartExpenseAI/backend/src/main/java/com/kavyanjali/smartexpense/dto/InsightResponseDto.java
 /home/kavya/Documents/FinanceProject/SmartExpenseAI/backend/src/main/java/com/kavyanjali/smartexpense/dto/ExpenseRequestDto.java

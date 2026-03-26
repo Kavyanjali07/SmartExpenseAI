@@ -46,6 +46,15 @@ public class User {
     @Column(name = "risk_profile", length = 20)
     private RiskProfile riskProfile;
 
+    @Column(name = "monthly_income")
+    private Double monthlyIncome;
+
+    @Column(name = "monthly_budget")
+    private Double monthlyBudget;
+
+    @Column(name = "primary_goal", length = 40)
+    private String primaryGoal;
+
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
@@ -127,6 +136,30 @@ public class User {
 
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public Double getMonthlyIncome() {
+        return monthlyIncome;
+    }
+
+    public void setMonthlyIncome(Double monthlyIncome) {
+        this.monthlyIncome = monthlyIncome;
+    }
+
+    public Double getMonthlyBudget() {
+        return monthlyBudget;
+    }
+
+    public void setMonthlyBudget(Double monthlyBudget) {
+        this.monthlyBudget = monthlyBudget;
+    }
+
+    public String getPrimaryGoal() {
+        return primaryGoal;
+    }
+
+    public void setPrimaryGoal(String primaryGoal) {
+        this.primaryGoal = primaryGoal;
     }
 
     public List<Expense> getExpenses() {

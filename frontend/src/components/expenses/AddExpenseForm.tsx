@@ -4,7 +4,7 @@ import { useState } from "react";
 import { createExpense } from "@/services/api";
 import { Plus } from "lucide-react";
 
-export default function AddExpenseForm({ onCreated }: any) {
+export default function AddExpenseForm({ onCreated }: { onCreated: () => void }) {
 
   const [amount, setAmount] = useState("");
   const [category, setCategory] = useState("");
@@ -16,7 +16,7 @@ export default function AddExpenseForm({ onCreated }: any) {
       amount: Number(amount),
       category,
       description,
-      expenseDate: new Date().toISOString().split("T")[0]
+      expenseDate: new Date().toISOString().split("T")[0],
     });
 
     setAmount("");

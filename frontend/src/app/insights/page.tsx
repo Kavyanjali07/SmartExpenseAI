@@ -2,25 +2,27 @@
 
 import { useEffect, useState } from "react";
 import DashboardLayout from "@/components/DashboardLayout";
-import Card from "@/components/cards/Card";
-import { getInsights } from "@/services/api";
+import { getApiErrorMessage, getInsights, type Insight } from "@/services/api";
 import { Lightbulb, TrendingUp, AlertCircle, CheckCircle } from "lucide-react";
 
 export default function InsightsPage() {
 
-  const [insights, setInsights] = useState<any[]>([]);
+  const [insights, setInsights] = useState<Insight[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     loadInsights();
   }, []);
 
   const loadInsights = async () => {
+    setLoading(true);
+    setError("");
     try {
       const data = await getInsights();
       setInsights(data);
     } catch (err) {
-      console.error("Failed to load insights", err);
+      setError(getApiErrorMessage(err, "Could not load insights."));
     } finally {
       setLoading(false);
     }
@@ -56,6 +58,18 @@ export default function InsightsPage() {
           </div>
         )}
 
+        {error && (
+          <div className="glass-card p-5 border border-red-500/30 bg-red-500/10">
+            <p className="text-red-200">{error}</p>
+            <button
+              onClick={loadInsights}
+              className="mt-3 px-4 py-2 rounded-lg border border-red-400/30 text-red-100 hover:bg-red-500/20"
+            >
+              Retry
+            </button>
+          </div>
+        )}
+
         {!loading && insights.length === 0 && (
           <div className="glass-card p-12 text-center">
             <p className="text-gray-400 mb-2">No insights available yet</p>
@@ -65,7 +79,7 @@ export default function InsightsPage() {
 
         <div className="grid grid-cols-1 gap-4">
 
-          {insights.map((insight: any, index) => {
+          {insights.map((insight, index) => {
             const IconComponent = getInsightIcon(index);
             const colors = getInsightColor(index);
             

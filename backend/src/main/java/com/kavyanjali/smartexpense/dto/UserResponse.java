@@ -12,6 +12,9 @@ public class UserResponse {
     private String email;
     private String fullName;
     private RiskProfile riskProfile;
+    private Double monthlyIncome;
+    private Double monthlyBudget;
+    private String primaryGoal;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createdAt;
     
@@ -19,13 +22,24 @@ public class UserResponse {
     public UserResponse() {
     }
 
-    public UserResponse(Long id, String username, String email, String fullName, 
-                        RiskProfile riskProfile, LocalDateTime createdAt) {
+    public UserResponse(
+            Long id,
+            String username,
+            String email,
+            String fullName,
+            RiskProfile riskProfile,
+            Double monthlyIncome,
+            Double monthlyBudget,
+            String primaryGoal,
+            LocalDateTime createdAt) {
         this.id = id;
         this.username = username;
         this.email = email;
         this.fullName = fullName;
         this.riskProfile = riskProfile;
+        this.monthlyIncome = monthlyIncome;
+        this.monthlyBudget = monthlyBudget;
+        this.primaryGoal = primaryGoal;
         this.createdAt = createdAt;
     }
 
@@ -68,6 +82,30 @@ public class UserResponse {
 
     public void setRiskProfile(RiskProfile riskProfile) {
         this.riskProfile = riskProfile;
+    }
+
+    public Double getMonthlyIncome() {
+        return monthlyIncome;
+    }
+
+    public void setMonthlyIncome(Double monthlyIncome) {
+        this.monthlyIncome = monthlyIncome;
+    }
+
+    public Double getMonthlyBudget() {
+        return monthlyBudget;
+    }
+
+    public void setMonthlyBudget(Double monthlyBudget) {
+        this.monthlyBudget = monthlyBudget;
+    }
+
+    public String getPrimaryGoal() {
+        return primaryGoal;
+    }
+
+    public void setPrimaryGoal(String primaryGoal) {
+        this.primaryGoal = primaryGoal;
     }
 
     public LocalDateTime getCreatedAt() {

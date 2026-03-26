@@ -33,18 +33,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         this.userDetailsService = userDetailsService;
     }
 
-    public String getCurrentUsername() {
-        var auth = SecurityContextHolder.getContext().getAuthentication();
-
-        if (auth == null || !auth.isAuthenticated()
-            || auth.getName().equals("anonymousUser")) {
-
-            return "testuser"; // dev fallback
-        }
-
-        return auth.getName();
-    }
-
     @Override
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,

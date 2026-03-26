@@ -4,10 +4,9 @@ import { useState } from "react";
 import { importCsv } from "@/services/api";
 import { Upload } from "lucide-react";
 
-export default function CsvImport({ onImported }: any) {
+export default function CsvImport({ onImported }: { onImported: () => void }) {
 
   const [file, setFile] = useState<File | null>(null);
-  const [isDragging, setIsDragging] = useState(false);
 
   const upload = async () => {
 
@@ -20,16 +19,13 @@ export default function CsvImport({ onImported }: any) {
 
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();
-    setIsDragging(true);
   };
 
   const handleDragLeave = () => {
-    setIsDragging(false);
   };
 
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault();
-    setIsDragging(false);
     const files = e.dataTransfer.files;
     if (files.length > 0) {
       setFile(files[0]);

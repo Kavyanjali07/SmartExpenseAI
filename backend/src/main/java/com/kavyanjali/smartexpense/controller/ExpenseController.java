@@ -21,8 +21,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import org.springframework.web.bind.annotation.*;
-
-import com.kavyanjali.smartexpense.service.DevUserService;
+import org.springframework.web.server.ResponseStatusException;
 
 @RestController
 @RequestMapping("/expenses")
@@ -33,15 +32,13 @@ public class ExpenseController {
 
     private final ExpenseService expenseService;
     private final UserService userService;
-    private final DevUserService devUserService;
 
     public ExpenseController(
             ExpenseService expenseService,
-            UserService userService, DevUserService devUserService) {
+            UserService userService) {
 
         this.expenseService = expenseService;
         this.userService = userService;
-        this.devUserService = devUserService;
     }
 
     /**
@@ -76,7 +73,7 @@ public class ExpenseController {
     @GetMapping
         public ResponseEntity<List<ExpenseResponse>> getExpenses() {
 
-        User user = devUserService.getDevUser();
+        User user = getAuthenticatedUser();
 
         List<ExpenseResponse> responses =
                 expenseService.getExpensesByUser(user)
@@ -110,6 +107,13 @@ public class ExpenseController {
 
         Authentication authentication =
                 SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication == null
+                || authentication.getName() == null
+                || authentication.getName().isBlank()
+                || "anonymousUser".equals(authentication.getName())) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized");
+        }
 
         return userService.getUserByUsername(authentication.getName());
     }
