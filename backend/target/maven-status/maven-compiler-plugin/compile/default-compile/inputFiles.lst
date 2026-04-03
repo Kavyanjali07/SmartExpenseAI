@@ -1,4 +1,5 @@
 /home/kavya/Documents/FinanceProject/SmartExpenseAI/backend/src/main/java/com/kavyanjali/smartexpense/service/ml/UserBehaviorType.java
+/home/kavya/Documents/FinanceProject/SmartExpenseAI/backend/src/main/java/com/kavyanjali/smartexpense/service/UserSessionService.java
 /home/kavya/Documents/FinanceProject/SmartExpenseAI/backend/src/main/java/com/kavyanjali/smartexpense/service/ml/BehaviorAnalysisService.java
 /home/kavya/Documents/FinanceProject/SmartExpenseAI/backend/src/main/java/com/kavyanjali/smartexpense/service/CustomUserDetailsService.java
 /home/kavya/Documents/FinanceProject/SmartExpenseAI/backend/src/main/java/com/kavyanjali/smartexpense/model/RiskProfile.java
@@ -15,6 +16,7 @@
 /home/kavya/Documents/FinanceProject/SmartExpenseAI/backend/src/main/java/com/kavyanjali/smartexpense/model/ExpenseSource.java
 /home/kavya/Documents/FinanceProject/SmartExpenseAI/backend/src/main/java/com/kavyanjali/smartexpense/model/ChatMessage.java
 /home/kavya/Documents/FinanceProject/SmartExpenseAI/backend/src/main/java/com/kavyanjali/smartexpense/controller/DashboardController.java
+/home/kavya/Documents/FinanceProject/SmartExpenseAI/backend/src/main/java/com/kavyanjali/smartexpense/controller/AdminSessionController.java
 /home/kavya/Documents/FinanceProject/SmartExpenseAI/backend/src/main/java/com/kavyanjali/smartexpense/dto/UserRegistrationRequest.java
 /home/kavya/Documents/FinanceProject/SmartExpenseAI/backend/src/main/java/com/kavyanjali/smartexpense/dto/BudgetRequestDto.java
 /home/kavya/Documents/FinanceProject/SmartExpenseAI/backend/src/main/java/com/kavyanjali/smartexpense/dto/MonthlyTrendDto.java
@@ -25,6 +27,7 @@
 /home/kavya/Documents/FinanceProject/SmartExpenseAI/backend/src/main/java/com/kavyanjali/smartexpense/dto/InsightResponseDto.java
 /home/kavya/Documents/FinanceProject/SmartExpenseAI/backend/src/main/java/com/kavyanjali/smartexpense/dto/ExpenseRequestDto.java
 /home/kavya/Documents/FinanceProject/SmartExpenseAI/backend/src/main/java/com/kavyanjali/smartexpense/dto/CategoryBreakdownDto.java
+/home/kavya/Documents/FinanceProject/SmartExpenseAI/backend/src/main/java/com/kavyanjali/smartexpense/repository/UserSessionRepository.java
 /home/kavya/Documents/FinanceProject/SmartExpenseAI/backend/src/main/java/com/kavyanjali/smartexpense/model/User.java
 /home/kavya/Documents/FinanceProject/SmartExpenseAI/backend/src/main/java/com/kavyanjali/smartexpense/exception/ResourceNotFoundException.java
 /home/kavya/Documents/FinanceProject/SmartExpenseAI/backend/src/main/java/com/kavyanjali/smartexpense/dto/FinancialHealthDto.java
@@ -32,10 +35,12 @@
 /home/kavya/Documents/FinanceProject/SmartExpenseAI/backend/src/main/java/com/kavyanjali/smartexpense/service/ml/TrendModel.java
 /home/kavya/Documents/FinanceProject/SmartExpenseAI/backend/src/main/java/com/kavyanjali/smartexpense/service/AuthService.java
 /home/kavya/Documents/FinanceProject/SmartExpenseAI/backend/src/main/java/com/kavyanjali/smartexpense/repository/BudgetRepository.java
+/home/kavya/Documents/FinanceProject/SmartExpenseAI/backend/src/main/java/com/kavyanjali/smartexpense/dto/ActiveUserSessionResponse.java
 /home/kavya/Documents/FinanceProject/SmartExpenseAI/backend/src/main/java/com/kavyanjali/smartexpense/SmartExpenseApplication.java
 /home/kavya/Documents/FinanceProject/SmartExpenseAI/backend/src/main/java/com/kavyanjali/smartexpense/controller/InsightController.java
 /home/kavya/Documents/FinanceProject/SmartExpenseAI/backend/src/main/java/com/kavyanjali/smartexpense/repository/ChatMessageRepository.java
 /home/kavya/Documents/FinanceProject/SmartExpenseAI/backend/src/main/java/com/kavyanjali/smartexpense/dto/BudgetResponseDto.java
+/home/kavya/Documents/FinanceProject/SmartExpenseAI/backend/src/main/java/com/kavyanjali/smartexpense/model/UserSession.java
 /home/kavya/Documents/FinanceProject/SmartExpenseAI/backend/src/main/java/com/kavyanjali/smartexpense/service/ai/RateLimitService.java
 /home/kavya/Documents/FinanceProject/SmartExpenseAI/backend/src/main/java/com/kavyanjali/smartexpense/dto/ExpenseResponse.java
 /home/kavya/Documents/FinanceProject/SmartExpenseAI/backend/src/main/java/com/kavyanjali/smartexpense/service/UserService.java

@@ -1,6 +1,7 @@
 package com.kavyanjali.smartexpense.config;
 
 import com.kavyanjali.smartexpense.service.CustomUserDetailsService;
+import com.kavyanjali.smartexpense.service.UserSessionService;
 import com.kavyanjali.smartexpense.util.JwtUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -26,11 +27,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtUtil jwtUtil;
     private final CustomUserDetailsService userDetailsService;
+    private final UserSessionService userSessionService;
 
     public JwtAuthenticationFilter(JwtUtil jwtUtil,
-                                   CustomUserDetailsService userDetailsService) {
+                                   CustomUserDetailsService userDetailsService,
+                                   UserSessionService userSessionService) {
         this.jwtUtil = jwtUtil;
         this.userDetailsService = userDetailsService;
+        this.userSessionService = userSessionService;
     }
 
     @Override
@@ -56,6 +60,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 return;
             }
 
+            if (!userSessionService.isSessionActive(token)) {
+                filterChain.doFilter(request, response);
+                return;
+            }
+
             // ✅ 3. Extract username
             String username = jwtUtil.extractUsername(token);
 
@@ -77,6 +86,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 );
 
                 SecurityContextHolder.getContext().setAuthentication(authToken);
+                userSessionService.touchSession(token);
 
                 logger.debug("JWT authentication successful for user: {}", username);
             }

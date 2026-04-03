@@ -1,20 +1,21 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import DashboardLayout from "@/components/DashboardLayout";
-import BubbleChart from "@/components/charts/BubbleChart";
-import CategoryPieChart from "@/components/charts/CategoryPieChart";
-import MonthlyTrendChart from "@/components/charts/MonthlyTrendChart";
-import AIInsights from "@/components/insights/AIInsights";
-import AnomaliesTimeline from "@/components/timeline/AnomaliesTimeline";
+import DashboardShell from "@/components/DashboardShell";
+import HeroSection from "@/components/dashboard/HeroSection";
+import ChartsSection from "@/components/dashboard/ChartsSection";
+import InsightsSection from "@/components/dashboard/InsightsSection";
+import TransactionsSection from "@/components/dashboard/TransactionsSection";
 import {
   getApiErrorMessage,
   getDashboardSummary,
   getMonthlyTrend,
   getCategoryDistribution,
   getInsights,
+  getExpenses,
   type DashboardSummaryResponse,
   type Insight,
+  type Expense,
 } from "@/services/api";
 
 export default function Home() {
@@ -22,6 +23,7 @@ export default function Home() {
   const [monthlyTrend, setMonthlyTrend] = useState<any[]>([]);
   const [categoryData, setCategoryData] = useState<any[]>([]);
   const [insights, setInsights] = useState<Insight[]>([]);
+  const [expenses, setExpenses] = useState<Expense[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -29,20 +31,22 @@ export default function Home() {
     setLoading(true);
     setError("");
     try {
-      const [sum, trend, dist, ins] = await Promise.all([
+      const [sum, trend, dist, ins, exp] = await Promise.all([
         getDashboardSummary(),
         getMonthlyTrend(),
         getCategoryDistribution(),
         getInsights(),
+        getExpenses(),
       ]);
       setSummary(sum);
       setMonthlyTrend(trend);
       setCategoryData(dist);
       setInsights(ins);
+      setExpenses(exp);
     } catch (err) {
       setError(getApiErrorMessage(err, "Could not load dashboard data."));
     } finally {
-      setLoading(false);
+      setTimeout(() => setLoading(false), 800); // Slight delay for smoother transition
     }
   };
 
@@ -83,85 +87,51 @@ export default function Home() {
           },
         ];
 
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-[#0B0F1A] flex flex-col items-center justify-center gap-6">
+        <div className="relative w-24 h-24">
+           <div className="absolute inset-0 border-4 border-primary/20 rounded-full" />
+           <div className="absolute inset-0 border-4 border-t-primary rounded-full animate-spin" />
+           <div className="absolute inset-4 border-4 border-secondary/20 rounded-full" />
+           <div className="absolute inset-4 border-4 border-b-secondary rounded-full animate-spin [animation-duration:1.5s]" />
+        </div>
+        <div className="flex flex-col items-center gap-2">
+           <span className="text-white font-bold tracking-[0.3em] uppercase text-xs">Initializing Engine</span>
+           <span className="text-gray-500 text-[10px] animate-pulse">Calibrating ML Models...</span>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <DashboardLayout>
-      <div className="space-y-6">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-center text-white tracking-wide">
-            Financial Dashboard
-          </h1>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="glass-card p-5 border border-white/10">
-            <p className="text-xs text-gray-400">This Month Spend</p>
-            <p className="text-2xl font-bold text-white mt-1">
-              ₹{summary?.totalSpent ?? 0}
-            </p>
-          </div>
-          <div className="glass-card p-5 border border-white/10">
-            <p className="text-xs text-gray-400">Budget Remaining</p>
-            <p className="text-2xl font-bold text-white mt-1">
-              ₹{summary?.budgetRemaining ?? 0}
-            </p>
-          </div>
-          <div className="glass-card p-5 border border-white/10">
-            <p className="text-xs text-gray-400">Top Category</p>
-            <p className="text-2xl font-bold text-white mt-1">
-              {summary?.topCategory || "Not available"}
-            </p>
-          </div>
-        </div>
-
-        {loading && (
-          <div className="glass-card p-8 text-center border border-white/10">
-            <p className="text-cyan-300">Loading dashboard...</p>
-          </div>
-        )}
-
-        {error && (
-          <div className="glass-card p-6 border border-red-500/30 bg-red-500/10">
+    <DashboardShell>
+      {error && (
+        <div className="fixed top-24 left-1/2 -translate-x-1/2 z-[100] max-w-md w-full px-4">
+          <div className="glass-panel p-6 border-red-500/30 bg-red-500/10 flex flex-col gap-4">
             <p className="text-red-200 font-medium">{error}</p>
             <button
               onClick={loadDashboardData}
-              className="mt-4 px-4 py-2 rounded-lg bg-red-500/20 border border-red-400/30 text-red-100 hover:bg-red-500/30 transition-colors"
+              className="px-4 py-2 rounded-lg bg-red-500/20 border border-red-400/30 text-red-100 hover:bg-red-500/30 transition-colors"
             >
-              Retry
+              Retry Connection
             </button>
           </div>
-        )}
-
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-          <div className="lg:col-span-5">
-            <div className="glass-card p-6 h-full border border-white/5">
-              <BubbleChart data={categoryData} />
-            </div>
-          </div>
-
-          <div className="lg:col-span-3">
-            <div className="glass-card p-6 h-full border border-white/5">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-bold text-white">AI Insights</h3>
-              </div>
-              <AIInsights insights={insightCards as any} />
-            </div>
-          </div>
-
-          <div className="lg:col-span-4 flex flex-col gap-6">
-            <div className="glass-card p-6 flex-1 border border-white/5">
-              <CategoryPieChart data={categoryData} />
-            </div>
-
-            <div className="glass-card p-6 flex-1 border border-white/5">
-              <MonthlyTrendChart data={monthlyTrend} />
-            </div>
-          </div>
         </div>
+      )}
 
-        <div className="w-full">
-          <AnomaliesTimeline events={timelineEvents} />
-        </div>
-      </div>
-    </DashboardLayout>
+      {/* Section 1: Hero */}
+      <HeroSection categoryData={categoryData} summary={summary} />
+
+      {/* Section 2: Analytics */}
+      <ChartsSection categoryData={categoryData} monthlyTrend={monthlyTrend} />
+
+      {/* Section 3: Intelligence */}
+      <InsightsSection insightCards={insightCards} timelineEvents={timelineEvents} />
+
+      {/* Section 4: Transactions */}
+      <TransactionsSection expenses={expenses} />
+      
+    </DashboardShell>
   );
 }

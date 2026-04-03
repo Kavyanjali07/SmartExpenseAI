@@ -31,10 +31,17 @@ public class UserService {
 
     @Transactional
     public User registerUser(User user) {
-        logger.info("Attempting to register user: {}", user.getUsername());
+        String normalizedUsername = normalizeRequiredValue(user.getUsername(), "Username");
+        String normalizedEmail = normalizeRequiredValue(user.getEmail(), "Email").toLowerCase(Locale.ROOT);
 
-        validateUniqueUsernameAndEmail(user.getUsername(), user.getEmail());
+        logger.info("Attempting to register user: {}", normalizedUsername);
+
+        validateUniqueUsernameAndEmail(normalizedUsername, normalizedEmail);
+
+        user.setUsername(normalizedUsername);
+        user.setEmail(normalizedEmail);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
+        user.setFullName(normalizeRequiredValue(user.getFullName(), "Full name"));
 
         User savedUser = userRepository.save(user);
 
@@ -105,5 +112,12 @@ public class UserService {
         }
 
         return normalizedGoal;
+    }
+
+    private String normalizeRequiredValue(String value, String fieldName) {
+        if (value == null || value.isBlank()) {
+            throw new IllegalArgumentException(fieldName + " is required");
+        }
+        return value.trim();
     }
 }

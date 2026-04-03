@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { LayoutDashboard, Wallet, BarChart3, MessageCircle, Sparkles, LogOut, UserCircle2, SlidersHorizontal } from "lucide-react";
 import { logoutClient } from "@/hooks/useAuthGuard";
+import { logoutUser } from "@/services/api";
 
 export default function Sidebar() {
   const pathname = usePathname();
@@ -18,9 +19,15 @@ export default function Sidebar() {
     { href: "/profile", label: "Profile", icon: UserCircle2 },
   ];
 
-  const onLogout = () => {
-    logoutClient();
-    router.replace("/login");
+  const onLogout = async () => {
+    try {
+      await logoutUser();
+    } catch {
+      // Ignore logout API failures and clear client token anyway.
+    } finally {
+      logoutClient();
+      router.replace("/login");
+    }
   };
 
   return (

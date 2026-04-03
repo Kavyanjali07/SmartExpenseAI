@@ -51,6 +51,14 @@ public class JwtUtil {
         return extractAllClaims(token).getSubject();
     }
 
+    public Date extractIssuedAt(String token) {
+        return extractAllClaims(token).getIssuedAt();
+    }
+
+    public Date extractExpiration(String token) {
+        return extractAllClaims(token).getExpiration();
+    }
+
     /**
      * Validate token.
      */

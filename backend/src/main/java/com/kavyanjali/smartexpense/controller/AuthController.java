@@ -6,6 +6,7 @@ import com.kavyanjali.smartexpense.dto.UserRegistrationRequest;
 import com.kavyanjali.smartexpense.dto.UserResponse;
 import com.kavyanjali.smartexpense.model.User;
 import com.kavyanjali.smartexpense.service.AuthService;
+import com.kavyanjali.smartexpense.service.UserSessionService;
 import com.kavyanjali.smartexpense.service.UserService;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
@@ -22,10 +23,12 @@ public class AuthController {
 
     private final AuthService authService;
     private final UserService userService;
+    private final UserSessionService userSessionService;
 
-    public AuthController(AuthService authService, UserService userService) {
+    public AuthController(AuthService authService, UserService userService, UserSessionService userSessionService) {
         this.authService = authService;
         this.userService = userService;
+        this.userSessionService = userSessionService;
     }
 
     /**
@@ -91,5 +94,21 @@ public class AuthController {
         logger.info("Login successful for username: {}", request.getUsername());
 
         return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout(@RequestHeader(value = "Authorization", required = false) String authHeader) {
+        String token = extractBearerToken(authHeader);
+        if (token != null) {
+            userSessionService.revokeSession(token);
+        }
+        return ResponseEntity.noContent().build();
+    }
+
+    private String extractBearerToken(String authHeader) {
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return null;
+        }
+        return authHeader.substring(7).trim();
     }
 }

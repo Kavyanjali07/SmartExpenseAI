@@ -48,8 +48,13 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     const status = error?.response?.status;
+    const requestUrl = String(error?.config?.url || "");
+    const isAuthRequest =
+      requestUrl.includes("/auth/login") ||
+      requestUrl.includes("/auth/signup") ||
+      requestUrl.includes("/auth/register");
 
-    if (typeof window !== "undefined" && (status === 401 || status === 403)) {
+    if (typeof window !== "undefined" && !isAuthRequest && (status === 401 || status === 403)) {
       localStorage.removeItem("token");
       window.location.href = "/login";
     }
@@ -105,6 +110,12 @@ export type UserProfile = {
   createdAt?: string;
 };
 
+export type ActiveUserSession = {
+  username: string;
+  activeSessionCount: number;
+  lastSeenAt: string;
+};
+
 export type ProfileUpdateRequest = {
   income: number;
   budget: number;
@@ -144,6 +155,10 @@ export const loginUser = async (data: LoginRequest) => {
   return res.data as { token: string };
 };
 
+export const logoutUser = async () => {
+  await api.post("/auth/logout");
+};
+
 export const getUserProfile = async () => {
   const res = await api.get("/users/profile");
   return res.data as UserProfile;
@@ -172,6 +187,11 @@ export const getMonthlyTrend = async () => {
 export const getCategoryDistribution = async () => {
   const res = await api.get("/dashboard/category-distribution");
   return res.data as CategoryDistributionPoint[];
+};
+
+export const getActiveUsers = async () => {
+  const res = await api.get("/admin/active-users");
+  return res.data as ActiveUserSession[];
 };
 
 export const getExpenses = async () => {

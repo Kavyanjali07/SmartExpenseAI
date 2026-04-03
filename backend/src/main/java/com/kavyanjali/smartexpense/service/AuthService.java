@@ -18,33 +18,45 @@ public class AuthService {
     private final CustomUserDetailsService userDetailsService;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
+    private final UserSessionService userSessionService;
 
     public AuthService(CustomUserDetailsService userDetailsService,
                        PasswordEncoder passwordEncoder,
-                       JwtUtil jwtUtil) {
+                       JwtUtil jwtUtil,
+                       UserSessionService userSessionService) {
         this.userDetailsService = userDetailsService;
         this.passwordEncoder = passwordEncoder;
         this.jwtUtil = jwtUtil;
+        this.userSessionService = userSessionService;
     }
 
     /**
      * Authenticates user and generates JWT token.
      */
     public LoginResponse authenticateUser(LoginRequest request) {
-
-        logger.info("Authenticating user: {}", request.getUsername());
+        String normalizedUsername = request.getUsername() == null ? null : request.getUsername().trim();
+        if (normalizedUsername == null || normalizedUsername.isBlank()) {
+            throw new BadCredentialsException("Invalid username or password");
+        }
+        logger.info("Authenticating user: {}", normalizedUsername);
 
         UserDetails userDetails =
-                userDetailsService.loadUserByUsername(request.getUsername());
+                userDetailsService.loadUserByUsername(normalizedUsername);
 
         if (!passwordEncoder.matches(request.getPassword(), userDetails.getPassword())) {
-            logger.warn("Authentication failed for user: {}", request.getUsername());
+            logger.warn("Authentication failed for user: {}", normalizedUsername);
             throw new BadCredentialsException("Invalid username or password");
         }
 
         String token = jwtUtil.generateToken(userDetails.getUsername());
+        userSessionService.createSession(
+                userDetails.getUsername(),
+                token,
+                jwtUtil.extractIssuedAt(token),
+                jwtUtil.extractExpiration(token)
+        );
 
-        logger.info("User authenticated successfully: {}", request.getUsername());
+        logger.info("User authenticated successfully: {}", normalizedUsername);
 
         return new LoginResponse(token);
     }
