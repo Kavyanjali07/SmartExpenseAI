@@ -1,69 +1,158 @@
 # SmartExpenseAI
 
-SmartExpenseAI is a full-stack personal finance manager with AI-powered spending insights and budget tracking.
+A full-stack personal finance application for tracking expenses, planning budgets, reviewing spending patterns, and exploring AI-assisted financial insights.
 
-## 🚀 Overview
+> **Project status:** Personal engineering project. Review the implementation and test coverage before using it with real financial data. This project is not financial advice.
 
-- Spring Boot backend with REST API and JWT authentication
-- Next.js frontend with responsive dashboard and chart visualizations
-- AI assistant for intelligent expense recommendations and analysis
-- CSV import/export, budgets, insights, and financial health scoring
+## Overview
 
-## 🧩 Features
+SmartExpenseAI combines a Java/Spring backend with a Next.js frontend.
+
+- **Backend:** Java 17, Spring Boot 3.2, Spring Web, Spring Data JPA, Spring Security, Bean Validation
+- **Frontend:** Next.js 16, React 19, TypeScript
+- **Data:** MySQL connector for configured database deployments; H2 in-memory database in the development profile
+- **Supporting services:** Redis integration, JWT-based authentication, OpenCSV
+- **AI integration:** Configurable OpenAI-compatible chat-completions endpoint
+
+## Features
+
+The project is designed around these workflows:
 
 - User registration and authentication
-- Expense CRUD and budget planner
-- Categorization with chart visualizations
-- AI insights and anomaly detection (GPT-like assistant)
-- Financial health and income/expense trend analysis
+- Expense creation, viewing, updating, and deletion
+- Budget planning and expense categorisation
+- Spending summaries, charts, and trend analysis
+- CSV import/export workflows
+- AI-assisted spending insights and recommendations
 
-## 📁 Repo Layout
+Feature availability can depend on the current implementation and configuration. See the source code for the authoritative behaviour.
 
-- `backend/`: Java Spring Boot API project
-- `frontend/`: Next.js UI project
+## Repository structure
 
-## 🛠️ Backend Quick Start
+```text
+SmartExpenseAI/
+├── backend/     # Java 17 and Spring Boot REST API
+└── frontend/    # Next.js and React application
+```
 
-1. `cd backend`
-2. `./mvnw clean package` (or `mvn clean package`)
-3. `java -jar target/smart-expense-tracker-1.0.0.jar`
+## Requirements
 
-Default config from `backend/src/main/resources/application.yml`.
+- Java 17
+- Node.js 20.9 or newer
+- npm
+- Redis, if the running backend configuration or enabled features require it
+- MySQL, if you choose a MySQL deployment instead of the development H2 profile
 
-## 🖥️ Frontend Quick Start
+## Run locally
 
-1. `cd frontend`
-2. `npm install`
-3. `npm run dev`
+### 1. Configure the backend
 
-Open `http://localhost:3000`.
+The backend uses environment variables for secrets and external service configuration. Do not commit real values to the repository.
 
-## 📦 Build Targets
+At minimum, provide a strong JWT signing secret:
 
-- Backend: `backend/target`
-- Frontend: `frontend/.next`
+```bash
+export JWT_SECRET="$(openssl rand -base64 48)"
+```
 
-## 🧪 Testing
+Optional AI configuration:
 
-- Backend: `cd backend && ./mvnw test`
-- Frontend: `cd frontend && npm test` (if tests configured)
+```bash
+export OPENAI_API_KEY="your-api-key"
+export OPENAI_MODEL="gpt-4o-mini"
+```
 
-## ℹ️ Notes
+The application configuration also supports:
 
-- Update `.env` or config for API URLs and credentials.
-- Enable CORS in backend via `config/CorsConfig.java`.
+| Variable | Purpose | Default |
+|---|---|---|
+| `JWT_SECRET` | JWT signing secret | Required |
+| `JWT_EXPIRATION` | Token lifetime in milliseconds | `3600000` |
+| `OPENAI_API_KEY` | AI provider API key | Empty |
+| `OPENAI_MODEL` | AI model name | `gpt-4o-mini` |
+| `OPENAI_API_URL` | Chat-completions endpoint | OpenAI endpoint |
+| `REDIS_HOST` | Redis hostname | `localhost` |
+| `REDIS_PORT` | Redis port | `6379` |
+| `REDIS_TIMEOUT` | Redis connection timeout | `2000ms` |
 
----
+Start the backend:
 
-## 🤝 Contribution
+```bash
+cd backend
+./mvnw spring-boot:run
+```
 
-1. Fork
-2. Create feature branch
-3. Add tests
-4. PR to `main`
+If the Maven wrapper is unavailable, install Maven and use:
 
----
+```bash
+mvn spring-boot:run
+```
 
-## 📬 Contact
+The configured backend port is `8080`. The default development profile uses an in-memory H2 database; its data is not durable across application restarts.
 
-Kavyanjali - smart expense AI project lead.
+### 2. Run the frontend
+
+Open a second terminal:
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+Open [http://localhost:3000](http://localhost:3000).
+
+Configure the frontend API endpoint using the environment variable expected by the frontend API client in your local setup. Do not assume a production API URL.
+
+## Useful commands
+
+### Backend
+
+```bash
+cd backend
+./mvnw test
+./mvnw clean package
+```
+
+### Frontend
+
+```bash
+cd frontend
+npm run lint
+npm run build
+```
+
+## Security notes
+
+- Keep JWT signing keys, AI provider keys, database credentials, and other secrets outside source control.
+- Use a unique, high-entropy JWT secret for each environment.
+- Rotate any credential that has ever been committed to a public repository. Removing it from the latest file does not remove it from Git history.
+- Do not use real personal financial data when testing an unreviewed development build.
+- Review authentication, authorization, validation, CORS, and error handling before deployment.
+- Use HTTPS and secure production database settings in any deployed environment.
+
+## Current limitations and next steps
+
+Areas worth strengthening as the project evolves:
+
+- Automated backend and frontend test coverage
+- Reproducible local setup and environment examples
+- API documentation and representative request/response examples
+- Database migration and production deployment guidance
+- Security review of authentication, authorization, and secret management
+- Screenshots or a short demo of the actual running application
+
+## Contributing
+
+1. Fork the repository.
+2. Create a feature branch.
+3. Make a focused change and add or update tests.
+4. Run the relevant checks.
+5. Open a pull request describing the change.
+
+## Author
+
+**Kavyanjali**
+
+- [GitHub](https://github.com/Kavyanjali07)
+- [LinkedIn](https://www.linkedin.com/in/kavyanjali07)
