@@ -11,8 +11,10 @@ server:
   port: 8080
 
 jwt:
-  secret: YuGF3CoVFbj39Gu5BOI4pIjKYdqBgEvd4o4h8gHzlHA=
-  expiration: 3600000   # 1 hour in milliseconds
+  # Supply a strong, randomly generated secret via the environment.
+  # Never commit signing keys or production credentials to source control.
+  secret: ${JWT_SECRET}
+  expiration: ${JWT_EXPIRATION:3600000}
 
 openai:
   api-key: ${OPENAI_API_KEY:}
